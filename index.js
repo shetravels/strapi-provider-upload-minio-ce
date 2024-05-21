@@ -4,7 +4,7 @@ const mime = require("mime-types");
 
 module.exports = {
   init(providerOptions) {
-    const { port, useSSL, endPoint, accessKey, secretKey, bucket, folder, private = false, expiry = 7 * 24 * 60 * 60 } = providerOptions;
+    const { port, useSSL, endPoint, accessKey, secretKey, bucket, folder, private = false, expiry = 7 * 24 * 60 * 60, host } = providerOptions;
     const isUseSSL = (useSSL === 'true' || useSSL === true);
     const MINIO = new Minio.Client({
       endPoint,
@@ -28,8 +28,6 @@ module.exports = {
       const hostPart = getHostPart() + bucket + '/';
       const path = file.url.replace(hostPart, '');
 
-      console.log("getFilePath", path);
-
       return path;
     };
     return {
@@ -43,19 +41,19 @@ module.exports = {
             'Content-Type': mime.lookup(file.ext) || 'application/octet-stream',
           }
           MINIO.putObject(
-            bucket,
-            path,
-            file.stream || Buffer.from(file.buffer, 'binary'),
-            metaData,
-            (err, _etag) => {
-              if (err) {
-                return reject(err);
+              bucket,
+              path,
+              file.stream || Buffer.from(file.buffer, 'binary'),
+              metaData,
+              (err, _etag) => {
+                if (err) {
+                  return reject(err);
+                }
+                const hostPart = host;
+                const filePath = `/${path}`;
+                file.url = `${hostPart}${filePath}`;
+                resolve();
               }
-              const hostPart = getHostPart();
-              const filePath = `${bucket}/${path}`;
-              file.url = `${hostPart}${filePath}`;
-              resolve();
-            }
           );
         });
       },
@@ -78,7 +76,7 @@ module.exports = {
       getSignedUrl(file) {
         return new Promise((resolve, reject) => {
           const url = new URL(file.url);
-          console.log("url", url);
+
           if (url.hostname !== endPoint) {
             resolve({ url: file.url });
           } else if (!url.pathname.startsWith(`/${bucket}/`)) {
