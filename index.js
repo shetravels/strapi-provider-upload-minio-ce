@@ -25,8 +25,10 @@ module.exports = {
       return protocol + endPoint + portSuffix + '/';
     };
     const getFilePath = (file) => {
-      const hostPart = getHostPart() + '/';
+      const hostPart = getHostPart() + bucket + '/';
       const path = file.url.replace(hostPart, '');
+
+      console.log("getFilePath", path);
 
       return path;
     };
@@ -76,6 +78,7 @@ module.exports = {
       getSignedUrl(file) {
         return new Promise((resolve, reject) => {
           const url = new URL(file.url);
+          console.log("url", url);
           if (url.hostname !== endPoint) {
             resolve({ url: file.url });
           } else if (!url.pathname.startsWith(`/${bucket}/`)) {
