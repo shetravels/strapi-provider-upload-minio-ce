@@ -59,7 +59,7 @@ module.exports = {
       },
       delete(file) {
         return new Promise((resolve, reject) => {
-          const path = getFilePath(file);
+          const path = getUploadPath(file);
 
           MINIO.removeObject(bucket, path, err => {
             if (err) {
