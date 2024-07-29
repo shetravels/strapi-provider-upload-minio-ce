@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/flyce/strapi-provider-upload-minio-ce.git"
+    "url": "git+https://github.com/shetravels/strapi-provider-upload-minio-ce.git"
   },
   "keywords": [
     "minio",
